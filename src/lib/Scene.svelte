@@ -2,13 +2,17 @@
   import { T } from '@threlte/core'
   import { OrbitControls, useGltf } from '@threlte/extras'
 
+  let { onloaded } = $props()
+
   const gltf = useGltf('/models/lahuta.glb')
 
-  // Den Boden aus Blender ausblenden
   $effect(() => {
     if ($gltf) {
+      // Den Boden aus Blender ausblenden
       const floor = $gltf.scene.getObjectByName('Floor')
       if (floor) floor.visible = false
+      // Dem Konfigurator Bescheid geben: fertig geladen
+      onloaded?.()
     }
   })
 </script>
