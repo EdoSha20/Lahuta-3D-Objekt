@@ -1,3 +1,69 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+
+
+@theme {
+  /* Farben: Rot und Schwarz der Flagge, dazu Gold und Creme */
+  --color-rot: #d9161c;
+  --color-rot-dunkel: #8e0f13;
+  --color-schwarz: #0d0a0a;
+  --color-kohle: #171211;
+  --color-karte: #1f1716;
+  --color-linie: #33292a;
+  --color-gold: #d6a84f;
+  --color-creme: #f4ead8;
+  --color-grau: #b9aca3;
+
+  /* Schriften */
+  --font-titel: 'Cinzel Decorative', 'Cinzel', serif;
+  --font-text: 'Cormorant Garamond', Georgia, serif;
+  --font-ui: 'Manrope', system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-schwarz text-creme font-text text-xl leading-relaxed;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-titel text-gold leading-tight;
+  }
+  ::selection {
+    background: var(--color-rot);
+    color: white;
+  }
+}
+
+/* Zickzack-Band, inspiriert von albanischen Webmustern */
+@utility kilim {
+  height: 18px;
+  background-color: var(--color-schwarz);
+  background-image:
+    linear-gradient(135deg, var(--color-rot) 25%, transparent 25%),
+    linear-gradient(225deg, var(--color-rot) 25%, transparent 25%),
+    linear-gradient(315deg, var(--color-rot) 25%, transparent 25%),
+    linear-gradient(45deg, var(--color-rot) 25%, transparent 25%);
+  background-size: 18px 18px;
+  background-position:
+    -9px 0,
+    -9px 0,
+    0 0,
+    0 0;
+}
+
+@layer components {
+  .knopf {
+    @apply inline-block cursor-pointer border border-gold px-6 py-3 font-ui text-sm font-bold tracking-widest text-creme uppercase no-underline transition hover:-translate-y-0.5 hover:bg-gold/15;
+  }
+  .knopf-rot {
+    @apply border-rot bg-rot hover:bg-rot/85;
+  }
+  .karte {
+    @apply border border-linie border-t-4 border-t-rot bg-karte p-6;
+  }
+}
