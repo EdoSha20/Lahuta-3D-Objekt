@@ -1,61 +1,73 @@
+
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
-
 @theme {
-  --color-wolle: #f4ecdd;   /* ungefärbte Wolle: Hintergrund */
-  --color-stein: #e5d9c3;   /* Kalkstein: Abschnitte */
-  --color-holz: #6a4429;    /* Walnussholz */
-  --color-kohle: #2b201a;   /* Text */
-  --color-rot: #a3261c;     /* Krapprot, nur als Akzent */
-  --color-tanne: #1f3a35;   /* Bergwald */
-  --color-nebel: #8fa39c;   /* Bergnebel */
-  --color-messing: #b8862d;
+  /* Hauptfarben */
+  --color-wolle: #f5f0e9;
+  --color-stein: #e9dfd3;
+  --color-holz: #6a4429;
+  --color-kohle: #30241e;
+  --color-rot: #a77a48;
+  --color-tanne: #30241e;
+  --color-nebel: #a99b8e;
+  --color-messing: #b48a59;
 
-  --font-titel: 'Young Serif', Georgia, serif;
-  --font-text: 'Karla', system-ui, sans-serif;
+  /* Neue Schriftarten */
+  --font-titel: 'Playfair Display', Georgia, serif;
+  --font-text: 'DM Sans', Arial, sans-serif;
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 90px;
   }
+
   body {
-    @apply bg-wolle font-text text-lg leading-relaxed text-kohle;
-    /* feine Papier-/Wollstruktur */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    margin: 0;
+    background: var(--color-wolle);
+    color: var(--color-kohle);
+    font-family: var(--font-text);
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
   }
+
   h1,
   h2,
   h3 {
-    @apply font-titel leading-tight text-kohle;
+    font-family: var(--font-titel);
   }
+
+  button,
+  input,
+  textarea,
+  select {
+    font-family: inherit;
+  }
+
   ::selection {
-    background: var(--color-rot);
+    background: var(--color-messing);
     color: white;
   }
 }
 
-/* Rauten-Borte wie auf albanischen Teppichen und Webarbeiten */
-@utility band {
-  height: 16px;
-  background-color: var(--color-wolle);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16'%3E%3Cpath d='M0 8L8 0L16 8L8 16Z' fill='%23a3261c'/%3E%3Cpath d='M16 8L24 0L32 8L24 16Z' fill='%231f3a35'/%3E%3Cpath d='M6 8L8 6L10 8L8 10Z' fill='%23f4ecdd'/%3E%3Cpath d='M22 8L24 6L26 8L24 10Z' fill='%23f4ecdd'/%3E%3C/svg%3E");
-  background-repeat: repeat-x;
-}
-
+/* Schlichte Buttons */
 @layer components {
   .knopf {
-    @apply inline-block cursor-pointer bg-tanne px-6 py-3 text-sm font-bold tracking-widest text-wolle uppercase no-underline transition hover:-translate-y-0.5 hover:bg-rot;
+    @apply inline-flex cursor-pointer items-center justify-center
+      bg-kohle px-6 py-3 text-sm font-semibold text-wolle
+      no-underline transition-colors hover:bg-messing;
   }
+
   .knopf-hell {
-    @apply border-2 border-tanne bg-transparent text-tanne hover:bg-tanne hover:text-wolle;
+    @apply border border-kohle bg-transparent text-kohle
+      hover:bg-kohle hover:text-wolle;
   }
-  /* Karte mit gestricheltem „Stickrand" */
+
   .karte {
-    @apply border border-holz/25 bg-wolle/70 p-6;
-    outline: 1px dashed rgb(106 68 41 / 0.35);
-    outline-offset: -8px;
+    @apply border border-holz/20 bg-white/70 p-6;
   }
 }

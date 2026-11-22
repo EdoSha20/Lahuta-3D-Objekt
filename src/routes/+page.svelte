@@ -2,173 +2,119 @@
 <script>
   import Konfigurator from '#lib/Konfigurator.svelte'
 
-  let menuOpen = $state(false)
+  let heroBildFehlt = $state(false)
 
   const gallery = [
     {
       image: '/renderings/gesamt.png',
-      number: '01',
-      title: 'Die ganze Lahuta',
-      description: 'Tradition, Form und Handwerkskunst.'
+      title: 'Die Lahuta',
+      description: 'Das Instrument in seiner ganzen Form.'
     },
     {
       image: '/renderings/detail.png',
-      number: '02',
-      title: 'Liebe zum Detail',
-      description: 'Holz, Fell und feine Saiten.'
+      title: 'Handwerk und Details',
+      description: 'Holz, Fell und die charakteristische Saite.'
     },
     {
       image: '/renderings/alternative.png',
-      number: '03',
-      title: 'Eine neue Perspektive',
-      description: 'Das Instrument in warmem Licht.'
+      title: 'Neue Perspektiven',
+      description: 'Traditionelle Form aus einem anderen Blickwinkel.'
     }
   ]
 </script>
 
 <svelte:head>
-  <title>Lahuta Atelier | Tradition trifft Design</title>
+  <title>Lahuta Atelier – Tradition trifft Design</title>
   <meta
     name="description"
-    content="Entdecke die Lahuta in 3D. Gestalte Holz, Fell, Metall und Form in unserem interaktiven Konfigurator."
-  />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
+    content="Entdecke die traditionelle albanische Lahuta und gestalte dein eigenes Instrument im interaktiven 3D-Konfigurator."
   />
 </svelte:head>
 
-<header class="navbar">
-  <a class="logo" href="#start">
-    LAHUTA<span>ATELIER</span>
-  </a>
-
-  <button
-    class="menu-toggle"
-    aria-label="Menü öffnen"
-    aria-expanded={menuOpen}
-    onclick={() => (menuOpen = !menuOpen)}
-  >
-    ☰
-  </button>
-
-  <nav class:open={menuOpen} aria-label="Hauptnavigation">
-    <a href="#start" onclick={() => (menuOpen = false)}>Start</a>
-    <a href="#konfigurator" onclick={() => (menuOpen = false)}>Konfigurator</a>
-    <a href="#galerie" onclick={() => (menuOpen = false)}>Galerie</a>
-    <a href="#geschichte" onclick={() => (menuOpen = false)}>Geschichte</a>
-  </nav>
-
-  <a class="nav-action" href="#konfigurator">Jetzt gestalten ↗</a>
-</header>
-
-<main>
-  <!-- HERO -->
-  <section class="hero" id="start">
-    <div class="hero-copy">
-      <p class="eyebrow">TRADITION · HANDWERK · TECHNOLOGIE</p>
+<section class="hero" id="start">
+  <div class="hero-content">
+    <div class="hero-inner">
+      <p class="eyebrow">Die Kunst der Lahuta</p>
 
       <h1>
-        Ein Instrument.<br />
-        <em>Unendliche</em><br />
-        Möglichkeiten.
+        Tradition,
+        <em>neu gestaltet.</em>
       </h1>
 
       <p class="hero-description">
-        Entdecke die Lahuta – ein traditionelles albanisches
-        Streichinstrument, neu erlebbar in einer interaktiven
-        3D-Welt.
+        Ein Instrument mit Geschichte. Entdecke die albanische
+        Lahuta und gestalte deine eigene Version in 3D.
       </p>
 
       <div class="hero-actions">
-        <a class="primary-button" href="#konfigurator">
-          Lahuta konfigurieren <span>↗</span>
+        <a href="#konfigurator" class="button-primary">
+          Lahuta gestalten <span aria-hidden="true">↗</span>
         </a>
-        <a class="text-button" href="#galerie">
-          Galerie entdecken ↓
+        <a href="#geschichte" class="button-text">
+          Geschichte entdecken
         </a>
-      </div>
-
-      <div class="hero-bottom">
-        <span>01 / 04</span>
-        <span>TRADITION IN JEDEM DETAIL</span>
       </div>
     </div>
+  </div>
 
-    <div class="hero-image">
+  <div class="hero-visual">
+    {#if heroBildFehlt}
+      <div class="image-fallback">
+        <span>LAHUTA</span>
+        <p>Traditionelles albanisches Instrument</p>
+      </div>
+    {:else}
       <img
         src="/renderings/gesamt.png"
-        alt="Traditionelle Lahuta auf einem Teppich"
+        alt="Traditionelle albanische Lahuta"
         fetchpriority="high"
+        onerror={() => (heroBildFehlt = true)}
       />
-      <div class="hero-image-label">
-        <span>THE LAHUTA COLLECTION</span>
-        <span>EST. 2026</span>
-      </div>
-    </div>
-  </section>
+    {/if}
+  </div>
+</section>
 
-  <!-- INTRO -->
-  <section class="intro">
-    <p class="eyebrow">DAS KONZEPT</p>
-    <h2>
-      Tradition bewahren.<br />
-      <em>Individuell gestalten.</em>
-    </h2>
+<section class="intro">
+  <div class="intro-inner">
+    <p class="eyebrow">Das Instrument</p>
+    <h2>Ein Stück albanischer <em>Kultur.</em></h2>
     <p>
-      Wähle deine Lieblingsmaterialien, entdecke unterschiedliche
-      Formen und betrachte dein Instrument aus jedem Winkel.
+      Die Lahuta ist ein traditionelles einsaitiges Streichinstrument,
+      das besonders in Nordalbanien mit dem Vortrag epischer Lieder
+      verbunden ist. Ihre Form und ihr Klang sind Teil einer
+      jahrhundertealten musikalischen Tradition.
     </p>
-  </section>
+  </div>
+</section>
 
-  <!-- 3D KONFIGURATOR -->
-  <section class="config-section" id="konfigurator">
-    <div class="section-heading">
+<section class="config-section" id="konfigurator">
+  <div class="section-container">
+    <div class="section-heading light">
       <div>
-        <p class="eyebrow">INTERAKTIVES ERLEBNIS / 01</p>
-        <h2>Deine Lahuta. <em>Dein Design.</em></h2>
+        <p class="eyebrow">3D-Konfigurator</p>
+        <h2>Deine Lahuta. <em>Deine Gestaltung.</em></h2>
       </div>
       <p>
-        Gestalte dein eigenes Instrument in Echtzeit.
-        Drehe es, zoome hinein und entdecke die Details.
+        Wähle Materialien, verändere die Form und betrachte
+        dein Instrument aus verschiedenen Perspektiven.
       </p>
     </div>
 
     <div class="config-wrapper">
       <Konfigurator />
     </div>
+  </div>
+</section>
 
-    <div class="feature-row">
-      <div>
-        <span class="feature-icon">◇</span>
-        <h3>Materialien</h3>
-        <p>Holz, Fell und Metall individuell kombinieren.</p>
-      </div>
-      <div>
-        <span class="feature-icon">◎</span>
-        <h3>360° entdecken</h3>
-        <p>Dein Instrument aus verschiedenen Winkeln ansehen.</p>
-      </div>
-      <div>
-        <span class="feature-icon">✧</span>
-        <h3>Form gestalten</h3>
-        <p>Die Geometrie deiner Lahuta interaktiv verändern.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- GALERIE -->
-  <section class="gallery-section" id="galerie">
+<section class="gallery-section" id="galerie">
+  <div class="section-container">
     <div class="section-heading">
       <div>
-        <p class="eyebrow">VISUELLE EINBLICKE / 02</p>
-        <h2>Eine Kunst für <em>sich.</em></h2>
+        <p class="eyebrow">Galerie</p>
+        <h2>Die Lahuta im <em>Detail.</em></h2>
       </div>
       <p>
-        Drei Perspektiven auf ein Instrument mit
-        jahrhundertealter Tradition.
+        Verschiedene Ansichten unseres digitalen Instruments.
       </p>
     </div>
 
@@ -176,81 +122,54 @@
       {#each gallery as item}
         <article class="gallery-card">
           <div class="gallery-image">
-            <img src={item.image} alt={item.title} loading="lazy" />
-            <span class="gallery-number">{item.number}</span>
+            <img
+              src={item.image}
+              alt={item.title}
+              loading="lazy"
+            />
           </div>
-          <div class="gallery-caption">
-            <div>
-              <h3>{item.title}</h3>
-              <p>{item.description}</p>
-            </div>
-            <span class="gallery-arrow">↗</span>
+
+          <div class="gallery-info">
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
           </div>
         </article>
       {/each}
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- GESCHICHTE -->
-  <section class="story-section" id="geschichte">
-    <div class="story-image">
-      <img
-        src="/renderings/detail.png"
-        alt="Detailansicht der Lahuta"
-        loading="lazy"
-      />
-    </div>
+<section class="story-section" id="geschichte">
+  <div class="story-image">
+    <img
+      src="/renderings/detail.png"
+      alt="Detailansicht einer Lahuta"
+      loading="lazy"
+    />
+  </div>
 
-    <div class="story-content">
-      <p class="eyebrow">UNSER KULTURERBE / 03</p>
-      <h2>
-        Mehr als nur<br />
-        ein <em>Instrument.</em>
-      </h2>
+  <div class="story-content">
+    <p class="eyebrow">Geschichte und Tradition</p>
+    <h2>Mehr als ein <em>Instrument.</em></h2>
 
-      <p>
-        Die Lahuta ist ein traditionelles einsaitiges
-        Streichinstrument, das besonders in den nordalbanischen
-        Bergregionen mit epischen Gesängen verbunden ist.
-      </p>
-
-      <p>
-        Ihre charakteristische Form und ihre handwerkliche
-        Herstellung machen sie zu einem besonderen Teil
-        der musikalischen Kultur.
-      </p>
-
-      <a href="#konfigurator" class="story-link">
-        Entdecke deine Lahuta <span>↗</span>
-      </a>
-    </div>
-  </section>
-
-  <!-- ABSCHLUSS -->
-  <section class="closing">
-    <p class="eyebrow">DEIN INSTRUMENT WARTET</p>
-    <h2>Tradition. <em>Neu gedacht.</em></h2>
     <p>
-      Entdecke die Möglichkeiten unseres interaktiven
-      3D-Konfigurators.
+      Die Lahuta begleitet seit Generationen den epischen Gesang
+      in den albanischen Bergregionen.
     </p>
-    <a href="#konfigurator" class="primary-button">
-      Jetzt konfigurieren ↗
-    </a>
-  </section>
-</main>
 
-<footer>
-  <a class="logo" href="#start">LAHUTA<span>ATELIER</span></a>
-  <p>Ein interaktives 3D-Projekt · ITP 2026</p>
-  <a href="#start">Nach oben ↑</a>
-</footer>
+    <p>
+      Traditionell wird sie aus Holz gefertigt und mit einer
+      Fellmembran bespannt. Ihre einzelne Saite wird mit einem
+      Bogen gespielt.
+    </p>
+
+    <a href="#konfigurator" class="story-link">
+      Eigene Lahuta gestalten <span aria-hidden="true">↗</span>
+    </a>
+  </div>
+</section>
 
 <style>
-  :global(*) {
-    box-sizing: border-box;
-  }
-
   :global(html) {
     scroll-behavior: smooth;
     scroll-padding-top: 90px;
@@ -258,19 +177,6 @@
 
   :global(body) {
     margin: 0;
-    background: #f5f0e8;
-    color: #261b16;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  :global(button),
-  :global(a) {
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  :global(a) {
-    color: inherit;
-    text-decoration: none;
   }
 
   :global(img) {
@@ -278,214 +184,169 @@
     max-width: 100%;
   }
 
-  h1, h2, h3, p {
-    margin-top: 0;
-  }
-
-  h1, h2, h3 {
-    font-family: 'Playfair Display', Georgia, serif;
-  }
-
-  em {
-    font-weight: 400;
-    color: #b78d5b;
-  }
-
-  .eyebrow {
-    color: #a57c4b;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    line-height: 1.6;
-  }
-
-  .navbar {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    padding: 19px 6%;
-    background: #f5f0e8f5;
-    border-bottom: 1px solid #dfd4c5;
-    backdrop-filter: blur(18px);
-  }
-
-  .logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 23px;
-    font-weight: 700;
-    letter-spacing: -1px;
-    white-space: nowrap;
-  }
-
-  .logo span {
-    color: #b78d5b;
-    font-weight: 400;
-  }
-
-  nav {
-    display: flex;
-    align-items: center;
-    gap: 30px;
-  }
-
-  nav a {
-    font-size: 12px;
-    font-weight: 600;
-    transition: color .2s;
-  }
-
-  nav a:hover {
-    color: #b78d5b;
-  }
-
-  .nav-action {
-    background: #2b211b;
-    color: #fff;
-    padding: 13px 20px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-
-  .menu-toggle {
-    display: none;
-    background: transparent;
-    border: none;
-    font-size: 26px;
-    color: #261b16;
-    cursor: pointer;
+  .hero,
+  .story-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
 
   .hero {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    min-height: 690px;
+    min-height: 660px;
+    background: #f5f0e9;
   }
 
-  .hero-copy {
-    padding: 105px 9% 35px 12%;
+  .hero-content {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    padding: 80px 10%;
   }
 
-  .hero h1 {
-    font-size: clamp(45px, 5.2vw, 82px);
-    line-height: 1.14;
+  .hero-inner {
+    max-width: 540px;
+  }
+
+  .eyebrow {
+    color: #a27c53;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin: 0 0 22px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 400;
+  }
+
+  h1 {
+    font-size: clamp(54px, 5.5vw, 88px);
+    line-height: 1.1;
     letter-spacing: -2px;
-    margin: 27px 0;
-    font-weight: 500;
+    margin: 0 0 28px;
+  }
+
+  h1 em,
+  h2 em {
+    color: #a77a48;
+    font-weight: 400;
   }
 
   .hero-description {
-    max-width: 450px;
-    color: #74685e;
+    color: #75685d;
+    font-size: 15px;
     line-height: 1.9;
-    font-size: 14px;
+    max-width: 430px;
+    margin: 0;
   }
 
   .hero-actions {
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
+    align-items: center;
     gap: 28px;
-    margin-top: 30px;
+    margin-top: 36px;
   }
 
-  .primary-button {
+  .button-primary {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: 25px;
-    padding: 19px 26px;
+    padding: 17px 25px;
+    background: #30241e;
+    color: #fffaf3;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+
+  .button-primary:hover {
     background: #a77a48;
-    color: #fff;
-    font-size: 12px;
-    font-weight: 700;
-    transition: background .2s, transform .2s;
   }
 
-  .primary-button:hover {
-    background: #855d32;
-    transform: translateY(-2px);
-  }
-
-  .text-button {
-    font-size: 12px;
-    font-weight: 700;
+  .button-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #30241e;
+    text-decoration: none;
     border-bottom: 1px solid #a77a48;
-    padding-bottom: 7px;
+    padding-bottom: 5px;
   }
 
-  .hero-bottom {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-top: auto;
-    padding-top: 70px;
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: #9a8d80;
-  }
-
-  .hero-image {
+  .hero-visual {
     position: relative;
-    min-height: 570px;
-    background: #35261e;
+    min-height: 600px;
+    background: #33251e;
     overflow: hidden;
   }
 
-  .hero-image img {
+  .hero-visual img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
   }
 
-  .hero-image-label {
+  .image-fallback {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    inset: 0;
     display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 25px;
-    color: white;
-    background: linear-gradient(transparent, #21160fb8);
-    font-size: 10px;
-    letter-spacing: 2px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #f5f0e9;
+    text-align: center;
+    padding: 30px;
+  }
+
+  .image-fallback span {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 54px;
+    letter-spacing: 5px;
+  }
+
+  .image-fallback p {
+    color: #cbb9a6;
+    font-size: 13px;
   }
 
   .intro {
     padding: 115px 6%;
     text-align: center;
-    max-width: 1100px;
+    background: #f5f0e9;
+  }
+
+  .intro-inner {
+    max-width: 780px;
     margin: auto;
   }
 
   .intro h2 {
-    font-size: clamp(38px, 5vw, 65px);
-    font-weight: 400;
-    line-height: 1.25;
-    margin: 24px 0;
+    font-size: clamp(38px, 4vw, 60px);
+    line-height: 1.2;
+    margin: 0 0 25px;
   }
 
-  .intro > p:last-child {
-    max-width: 540px;
+  .intro-inner > p:last-child {
+    max-width: 650px;
     margin: auto;
-    color: #74685e;
-    line-height: 1.9;
+    color: #75685d;
     font-size: 14px;
+    line-height: 2;
   }
 
   .config-section {
-    padding: 100px 6%;
     background: #241b17;
-    color: #f5f0e8;
+    color: #f5f0e9;
+    padding: 100px 0;
+  }
+
+  .section-container {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 6%;
   }
 
   .section-heading {
@@ -493,70 +354,44 @@
     align-items: end;
     justify-content: space-between;
     gap: 35px;
-    margin-bottom: 45px;
+    margin-bottom: 40px;
   }
 
   .section-heading h2 {
-    font-size: clamp(35px, 4.4vw, 60px);
-    font-weight: 400;
+    font-size: clamp(36px, 4vw, 58px);
     line-height: 1.2;
-    margin-bottom: 0;
+    margin: 0;
   }
 
   .section-heading > p {
-    max-width: 320px;
-    color: #95877b;
+    max-width: 330px;
+    color: #817267;
     font-size: 13px;
-    line-height: 1.9;
+    line-height: 1.8;
     margin: 0;
+  }
+
+  .section-heading.light > p {
+    color: #c2b2a5;
   }
 
   .config-wrapper {
     width: 100%;
-    min-height: 680px;
     height: min(85vh, 850px);
-    border: 1px solid #574437;
-    background: #1b1512;
+    min-height: 680px;
+    background: #201915;
     overflow: hidden;
   }
 
-  .feature-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
-    padding-top: 50px;
-  }
-
-  .feature-row > div {
-    border-top: 1px solid #594637;
-    padding-top: 25px;
-  }
-
-  .feature-icon {
-    font-size: 30px;
-    color: #c5a06e;
-  }
-
-  .feature-row h3 {
-    font-size: 21px;
-    font-weight: 400;
-    margin: 15px 0 10px;
-  }
-
-  .feature-row p {
-    color: #9c8c7e;
-    font-size: 12px;
-    line-height: 1.8;
-  }
-
   .gallery-section {
-    padding: 110px 6%;
+    background: #f5f0e9;
+    padding: 110px 0;
   }
 
   .gallery-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 22px;
+    gap: 25px;
   }
 
   .gallery-card {
@@ -564,7 +399,6 @@
   }
 
   .gallery-image {
-    position: relative;
     aspect-ratio: 4 / 5;
     overflow: hidden;
     background: #3a2a21;
@@ -574,57 +408,38 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform .5s;
+    transition: transform 0.4s;
   }
 
   .gallery-card:hover img {
-    transform: scale(1.045);
+    transform: scale(1.04);
   }
 
-  .gallery-number {
-    position: absolute;
-    top: 18px;
-    left: 18px;
-    background: #f5f0e8;
-    padding: 9px 12px;
-    font-size: 11px;
-  }
-
-  .gallery-caption {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
+  .gallery-info {
     padding: 22px 0;
   }
 
-  .gallery-caption h3 {
-    font-size: 23px;
-    font-weight: 400;
-    margin-bottom: 8px;
+  .gallery-info h3 {
+    font-size: 24px;
+    margin: 0 0 8px;
   }
 
-  .gallery-caption p {
-    font-size: 12px;
-    color: #87776a;
-    line-height: 1.6;
-  }
-
-  .gallery-arrow {
-    font-size: 22px;
-    color: #a77a48;
+  .gallery-info p {
+    color: #817267;
+    font-size: 13px;
+    line-height: 1.7;
+    margin: 0;
   }
 
   .story-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    background: #e8dfd3;
-    min-height: 570px;
+    min-height: 560px;
+    background: #e9dfd3;
   }
 
   .story-image {
-    min-height: 480px;
-    overflow: hidden;
+    min-height: 500px;
     background: #35261e;
+    overflow: hidden;
   }
 
   .story-image img {
@@ -634,120 +449,54 @@
   }
 
   .story-content {
-    padding: 90px 12%;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
+    padding: 85px 12%;
   }
 
   .story-content h2 {
-    font-size: clamp(38px, 4.5vw, 64px);
-    font-weight: 400;
+    font-size: clamp(40px, 4.5vw, 64px);
     line-height: 1.2;
-    margin: 20px 0 30px;
+    margin: 0 0 28px;
   }
 
   .story-content > p:not(.eyebrow) {
-    color: #706258;
+    color: #75685d;
     font-size: 14px;
-    line-height: 2;
-    max-width: 460px;
+    line-height: 1.9;
+    max-width: 450px;
+    margin: 0 0 18px;
   }
 
   .story-link {
-    margin-top: 25px;
-    padding-bottom: 10px;
+    margin-top: 15px;
+    padding-bottom: 8px;
     border-bottom: 1px solid #a77a48;
-    font-size: 12px;
-    font-weight: 700;
+    color: #30241e;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
   }
 
   .story-link span {
-    margin-left: 25px;
+    margin-left: 15px;
   }
 
-  .closing {
-    text-align: center;
-    padding: 120px 20px;
-  }
-
-  .closing h2 {
-    font-size: clamp(40px, 5vw, 70px);
-    font-weight: 400;
-    margin: 20px 0;
-  }
-
-  .closing > p:not(.eyebrow) {
-    color: #87776a;
-    font-size: 14px;
-    line-height: 1.8;
-    margin-bottom: 35px;
-  }
-
-  footer {
-    background: #241b17;
-    color: #f5f0e8;
-    padding: 40px 6%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-  }
-
-  footer p, footer > a:last-child {
-    font-size: 11px;
-    color: #a99a8d;
-  }
-
-  @media (max-width: 900px) {
-    .navbar {
-      padding: 18px 5%;
-    }
-
-    .menu-toggle {
-      display: block;
-      margin-left: auto;
-    }
-
-    .navbar nav {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 20px;
-      padding: 25px 6%;
-      background: #f5f0e8;
-      border-bottom: 1px solid #dfd4c5;
-    }
-
-    .navbar nav.open {
-      display: flex;
-    }
-
-    .nav-action {
-      display: none;
-    }
-
-    .hero {
+  @media (max-width: 950px) {
+    .hero,
+    .story-section {
       grid-template-columns: 1fr;
     }
 
-    .hero-copy {
-      padding: 75px 6% 45px;
+    .hero-content {
+      padding: 85px 6%;
     }
 
-    .hero-bottom {
-      margin-top: 40px;
-      padding-top: 0;
-    }
-
-    .hero-image {
-      height: 520px;
-      min-height: 0;
+    .hero-visual {
+      min-height: 500px;
+      height: 500px;
     }
 
     .section-heading {
@@ -767,38 +516,42 @@
     }
 
     .story-content {
-      padding: 65px 8%;
+      padding: 75px 8%;
     }
   }
 
   @media (max-width: 600px) {
-    .logo {
-      font-size: 20px;
+    .hero-content {
+      padding: 70px 20px;
     }
 
-    .hero h1 {
-      font-size: 47px;
+    h1 {
+      font-size: 52px;
     }
 
-    .hero-image {
-      height: 420px;
+    .hero-visual {
+      min-height: 380px;
+      height: 380px;
     }
 
-    .intro, .gallery-section {
-      padding: 75px 5%;
+    .intro {
+      padding: 75px 20px;
     }
 
     .config-section {
-      padding: 70px 4%;
+      padding: 70px 0;
+    }
+
+    .section-container {
+      padding: 0 15px;
     }
 
     .config-wrapper {
       height: 760px;
     }
 
-    .feature-row {
-      grid-template-columns: 1fr;
-      gap: 15px;
+    .gallery-section {
+      padding: 75px 0;
     }
 
     .gallery-grid {
@@ -809,22 +562,13 @@
       aspect-ratio: 4 / 3;
     }
 
-    .story-section {
-      grid-template-columns: 1fr;
-    }
-
     .story-image {
-      min-height: 360px;
-      height: 360px;
+      min-height: 350px;
+      height: 350px;
     }
 
     .story-content {
-      padding: 70px 6%;
-    }
-
-    footer {
-      flex-direction: column;
-      text-align: center;
+      padding: 70px 20px;
     }
   }
 </style>
