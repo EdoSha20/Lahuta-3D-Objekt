@@ -4,21 +4,17 @@
 
 
 @theme {
-  /* Farben: Rot und Schwarz der Flagge, dazu Gold und Creme */
-  --color-rot: #d9161c;
-  --color-rot-dunkel: #8e0f13;
-  --color-schwarz: #0d0a0a;
-  --color-kohle: #171211;
-  --color-karte: #1f1716;
-  --color-linie: #33292a;
-  --color-gold: #d6a84f;
-  --color-creme: #f4ead8;
-  --color-grau: #b9aca3;
+  --color-wolle: #f4ecdd;   /* ungefärbte Wolle: Hintergrund */
+  --color-stein: #e5d9c3;   /* Kalkstein: Abschnitte */
+  --color-holz: #6a4429;    /* Walnussholz */
+  --color-kohle: #2b201a;   /* Text */
+  --color-rot: #a3261c;     /* Krapprot, nur als Akzent */
+  --color-tanne: #1f3a35;   /* Bergwald */
+  --color-nebel: #8fa39c;   /* Bergnebel */
+  --color-messing: #b8862d;
 
-  /* Schriften */
-  --font-titel: 'Cinzel Decorative', 'Cinzel', serif;
-  --font-text: 'Cormorant Garamond', Georgia, serif;
-  --font-ui: 'Manrope', system-ui, sans-serif;
+  --font-titel: 'Young Serif', Georgia, serif;
+  --font-text: 'Karla', system-ui, sans-serif;
 }
 
 @layer base {
@@ -26,12 +22,14 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-schwarz text-creme font-text text-xl leading-relaxed;
+    @apply bg-wolle font-text text-lg leading-relaxed text-kohle;
+    /* feine Papier-/Wollstruktur */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   h1,
   h2,
   h3 {
-    @apply font-titel text-gold leading-tight;
+    @apply font-titel leading-tight text-kohle;
   }
   ::selection {
     background: var(--color-rot);
@@ -39,31 +37,25 @@
   }
 }
 
-/* Zickzack-Band, inspiriert von albanischen Webmustern */
-@utility kilim {
-  height: 18px;
-  background-color: var(--color-schwarz);
-  background-image:
-    linear-gradient(135deg, var(--color-rot) 25%, transparent 25%),
-    linear-gradient(225deg, var(--color-rot) 25%, transparent 25%),
-    linear-gradient(315deg, var(--color-rot) 25%, transparent 25%),
-    linear-gradient(45deg, var(--color-rot) 25%, transparent 25%);
-  background-size: 18px 18px;
-  background-position:
-    -9px 0,
-    -9px 0,
-    0 0,
-    0 0;
+/* Rauten-Borte wie auf albanischen Teppichen und Webarbeiten */
+@utility band {
+  height: 16px;
+  background-color: var(--color-wolle);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16'%3E%3Cpath d='M0 8L8 0L16 8L8 16Z' fill='%23a3261c'/%3E%3Cpath d='M16 8L24 0L32 8L24 16Z' fill='%231f3a35'/%3E%3Cpath d='M6 8L8 6L10 8L8 10Z' fill='%23f4ecdd'/%3E%3Cpath d='M22 8L24 6L26 8L24 10Z' fill='%23f4ecdd'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
 }
 
 @layer components {
   .knopf {
-    @apply inline-block cursor-pointer border border-gold px-6 py-3 font-ui text-sm font-bold tracking-widest text-creme uppercase no-underline transition hover:-translate-y-0.5 hover:bg-gold/15;
+    @apply inline-block cursor-pointer bg-tanne px-6 py-3 text-sm font-bold tracking-widest text-wolle uppercase no-underline transition hover:-translate-y-0.5 hover:bg-rot;
   }
-  .knopf-rot {
-    @apply border-rot bg-rot hover:bg-rot/85;
+  .knopf-hell {
+    @apply border-2 border-tanne bg-transparent text-tanne hover:bg-tanne hover:text-wolle;
   }
+  /* Karte mit gestricheltem „Stickrand" */
   .karte {
-    @apply border border-linie border-t-4 border-t-rot bg-karte p-6;
+    @apply border border-holz/25 bg-wolle/70 p-6;
+    outline: 1px dashed rgb(106 68 41 / 0.35);
+    outline-offset: -8px;
   }
 }
