@@ -11,20 +11,27 @@
 
   let geladen = $state(false)
   let config = $state({ ...STANDARD })
+
+  /** @type {{ pos: [number, number, number], target: [number, number, number], id: number } | null} */
   let view = $state(null)
+
   let drehen = $state(false)
   let kopiert = $state(false)
   let bereit = $state(false)
   let aktiverTab = $state('material')
-  let api = null
+
+  /** @type {{ screenshot: () => string } | null} */
+  let api = $state(null)
 
   const gesamtpreis = $derived(preis(config))
 
   onMount(() => {
     try {
       const gespeichert = localStorage.getItem('lahuta-config')
+
       if (gespeichert) {
         const daten = JSON.parse(gespeichert)
+
         if (daten && typeof daten === 'object') {
           Object.assign(config, daten)
         }
@@ -32,11 +39,13 @@
     } catch (e) {
       console.warn('Konfiguration konnte nicht geladen werden', e)
     }
+
     bereit = true
   })
 
   $effect(() => {
     const daten = JSON.stringify(config)
+
     if (bereit) {
       try {
         localStorage.setItem('lahuta-config', daten)
@@ -46,6 +55,7 @@
     }
   })
 
+  /** @param {(typeof PRESETS)[number]} p */
   function preset(p) {
     Object.assign(config, p.werte)
   }
@@ -54,6 +64,7 @@
     Object.assign(config, STANDARD)
   }
 
+  /** @param {(typeof VIEWS)[number]} v */
   function ansicht(v) {
     view = {
       pos: v.pos,
@@ -89,11 +100,8 @@
 <div class="atelier">
   <section class="stage" aria-label="Interaktive 3D-Ansicht">
     <div class="stage-top">
-      <div class="stage-brand">
-        <span class="status-dot"></span>
-        INTERACTIVE 3D EXPERIENCE
-      </div>
-      <span class="stage-number">Nº 001 — LAHUTA</span>
+      <span class="stage-brand">Lahuta / 3D-Ansicht</span>
+      <span class="stage-number">Atelier Nº 01</span>
     </div>
 
     <div class="canvas-area">
@@ -102,7 +110,7 @@
           {config}
           {view}
           autoRotate={drehen}
-          hintergrund="#201915"
+          hintergrund="#eae4dc"
           onloaded={() => (geladen = true)}
           onready={(a) => (api = a)}
         />
@@ -112,8 +120,8 @@
     {#if !geladen}
       <div class="loading">
         <div class="loader"></div>
-        <h3>Deine Lahuta wird vorbereitet</h3>
-        <p>3D-Modell und Materialien werden geladen …</p>
+        <h3>Die Lahuta wird vorbereitet</h3>
+        <p>Das 3D-Modell wird geladen …</p>
       </div>
     {/if}
 
@@ -128,8 +136,8 @@
         </div>
 
         <button
-          class:active={drehen}
           class="rotate-button"
+          class:active={drehen}
           aria-pressed={drehen}
           onclick={() => (drehen = !drehen)}
         >
@@ -139,17 +147,20 @@
       </div>
 
       <div class="stage-bottom">
-        <span>↔ Ziehen zum Drehen</span>
-        <span>⊕ Scrollen zum Zoomen</span>
+        <span>Ziehen zum Drehen</span>
+        <span>Scrollen zum Zoomen</span>
       </div>
     {/if}
   </section>
 
   <aside class="panel">
     <div class="panel-header">
-      <span class="eyebrow">THE PERSONAL COLLECTION</span>
-      <h2>Gestalte deine <em>Lahuta.</em></h2>
-      <p>Jedes Detail erzählt deine Geschichte.</p>
+      <p class="eyebrow">Dein Instrument</p>
+      <h2>Die Lahuta <em>gestalten.</em></h2>
+      <p>
+        Wähle Materialien, passe die Form an
+        und entdecke deine eigene Gestaltung.
+      </p>
     </div>
 
     <div class="tabs">
@@ -159,12 +170,14 @@
       >
         Materialien
       </button>
+
       <button
         class:selected={aktiverTab === 'form'}
         onclick={() => (aktiverTab = 'form')}
       >
         Form
       </button>
+
       <button
         class:selected={aktiverTab === 'studio'}
         onclick={() => (aktiverTab = 'studio')}
@@ -177,21 +190,28 @@
       {#if aktiverTab === 'material'}
         <div class="option-group">
           <div class="group-title">
-            <span>01 / HOLZART</span>
-            <small>Wähle deinen Charakter</small>
+            <span>01 — Holzart</span>
+            <small>Material auswählen</small>
           </div>
 
           <div class="swatch-grid">
             {#each HOLZ as h (h.id)}
               <button
-                class:chosen={config.holz === h.id}
                 class="swatch-option"
+                class:chosen={config.holz === h.id}
                 onclick={() => (config.holz = h.id)}
                 aria-pressed={config.holz === h.id}
               >
-                <span class="swatch" style:background={h.farbe}></span>
+                <span
+                  class="swatch"
+                  style:background={h.farbe}
+                ></span>
+
                 <span>{h.name}</span>
-                {#if config.holz === h.id}<b>✓</b>{/if}
+
+                {#if config.holz === h.id}
+                  <span class="check">✓</span>
+                {/if}
               </button>
             {/each}
           </div>
@@ -199,21 +219,28 @@
 
         <div class="option-group">
           <div class="group-title">
-            <span>02 / FELLMATERIAL</span>
-            <small>Oberfläche gestalten</small>
+            <span>02 — Fellmaterial</span>
+            <small>Oberfläche</small>
           </div>
 
           <div class="swatch-grid">
             {#each FELL as f (f.id)}
               <button
-                class:chosen={config.fell === f.id}
                 class="swatch-option"
+                class:chosen={config.fell === f.id}
                 onclick={() => (config.fell = f.id)}
                 aria-pressed={config.fell === f.id}
               >
-                <span class="swatch" style:background={f.farbe}></span>
+                <span
+                  class="swatch"
+                  style:background={f.farbe}
+                ></span>
+
                 <span>{f.name}</span>
-                {#if config.fell === f.id}<b>✓</b>{/if}
+
+                {#if config.fell === f.id}
+                  <span class="check">✓</span>
+                {/if}
               </button>
             {/each}
           </div>
@@ -221,42 +248,51 @@
 
         <div class="option-group">
           <div class="group-title">
-            <span>03 / METALLDETAILS</span>
-            <small>Der letzte Schliff</small>
+            <span>03 — Metalldetails</span>
+            <small>Feine Akzente</small>
           </div>
 
           <div class="swatch-grid">
             {#each METALL as m (m.id)}
               <button
-                class:chosen={config.metall === m.id}
                 class="swatch-option"
+                class:chosen={config.metall === m.id}
                 onclick={() => (config.metall = m.id)}
                 aria-pressed={config.metall === m.id}
               >
-                <span class="swatch" style:background={m.farbe}></span>
+                <span
+                  class="swatch"
+                  style:background={m.farbe}
+                ></span>
+
                 <span>{m.name}</span>
-                {#if config.metall === m.id}<b>✓</b>{/if}
+
+                {#if config.metall === m.id}
+                  <span class="check">✓</span>
+                {/if}
               </button>
             {/each}
           </div>
         </div>
+
       {:else if aktiverTab === 'form'}
         <div class="option-group">
           <div class="group-title">
-            <span>04 / INDIVIDUELLE FORM</span>
-            <small>3D-Geometrie verändern</small>
+            <span>04 — Proportionen</span>
+            <small>Individuelle Form</small>
           </div>
 
           <p class="hint">
-            Passe die Proportionen deiner Lahuta an.
-            Die Änderungen werden direkt im 3D-Modell sichtbar.
+            Verändere die Proportionen deiner Lahuta.
+            Die Anpassungen erscheinen direkt im 3D-Modell.
           </p>
 
           <div class="range-group">
             <label for="breit">
               <span>Korpusbreite</span>
-              <strong>{Math.round(config.breit * 100)}%</strong>
+              <span>{Math.round(config.breit * 100)}%</span>
             </label>
+
             <input
               id="breit"
               type="range"
@@ -270,8 +306,9 @@
           <div class="range-group">
             <label for="tief">
               <span>Korpustiefe</span>
-              <strong>{Math.round(config.tief * 100)}%</strong>
+              <span>{Math.round(config.tief * 100)}%</span>
             </label>
+
             <input
               id="tief"
               type="range"
@@ -285,8 +322,9 @@
           <div class="range-group">
             <label for="lang">
               <span>Halslänge</span>
-              <strong>{Math.round(config.lang * 100)}%</strong>
+              <span>{Math.round(config.lang * 100)}%</span>
             </label>
+
             <input
               id="lang"
               type="range"
@@ -297,11 +335,12 @@
             />
           </div>
         </div>
+
       {:else}
         <div class="option-group">
           <div class="group-title">
-            <span>05 / LICHTSTIMMUNG</span>
-            <small>Die richtige Atmosphäre</small>
+            <span>05 — Lichtstimmung</span>
+            <small>Atmosphäre</small>
           </div>
 
           <div class="option-list">
@@ -310,8 +349,8 @@
                 class:chosen={config.licht === l.id}
                 onclick={() => (config.licht = l.id)}
               >
-                <span>✧ {l.name}</span>
-                <span>{config.licht === l.id ? '●' : '○'}</span>
+                <span>{l.name}</span>
+                <span>{config.licht === l.id ? '✓' : '○'}</span>
               </button>
             {/each}
           </div>
@@ -319,14 +358,14 @@
 
         <div class="option-group">
           <div class="group-title">
-            <span>06 / DESIGN-KOLLEKTION</span>
+            <span>06 — Kollektion</span>
             <small>Fertige Kombinationen</small>
           </div>
 
           <div class="option-list">
             {#each PRESETS as p}
               <button onclick={() => preset(p)}>
-                <span>◇ {p.name}</span>
+                <span>{p.name}</span>
                 <span>↗</span>
               </button>
             {/each}
@@ -338,21 +377,24 @@
     <div class="panel-footer">
       <div class="price">
         <div>
-          <small>INDIVIDUELLE KONFIGURATION</small>
+          <small>Deine Konfiguration</small>
           <span>Unverbindlicher Beispielpreis</span>
         </div>
+
         <strong>{gesamtpreis} €</strong>
       </div>
 
       <div class="actions">
         <button onclick={foto} disabled={!geladen || !api}>
-          <span>▣</span> Foto
+          Foto
         </button>
+
         <button onclick={kopieren}>
-          <span>▤</span> {kopiert ? 'Kopiert!' : 'Teilen'}
+          {kopiert ? 'Kopiert!' : 'Teilen'}
         </button>
+
         <button onclick={zuruecksetzen}>
-          <span>↺</span> Reset
+          Zurücksetzen
         </button>
       </div>
     </div>
@@ -366,14 +408,23 @@
     width: 100%;
     height: 100%;
     min-height: 680px;
-    background: #211914;
-    color: #f6f0e8;
-    font-family: 'DM Sans', sans-serif;
+    background: #f5f1eb;
+    color: #352c26;
+    font-family: 'DM Sans', Arial, sans-serif;
   }
 
   button {
     font: inherit;
     cursor: pointer;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  button:focus-visible {
+    outline: 2px solid #9d8069;
+    outline-offset: 3px;
   }
 
   .stage {
@@ -381,7 +432,7 @@
     min-width: 0;
     min-height: 0;
     overflow: hidden;
-    background: #201915;
+    background: #eae4dc;
   }
 
   .canvas-area {
@@ -392,80 +443,70 @@
   .stage-top,
   .stage-bottom {
     position: absolute;
-    left: 25px;
-    right: 25px;
+    left: 28px;
+    right: 28px;
+    z-index: 5;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 15px;
     pointer-events: none;
-    z-index: 5;
   }
 
   .stage-top {
-    top: 25px;
+    top: 27px;
   }
 
   .stage-bottom {
-    bottom: 22px;
-    color: #c3b4a6;
+    bottom: 25px;
+    color: #81766c;
     font-size: 11px;
-    letter-spacing: .5px;
   }
 
   .stage-brand,
   .stage-number {
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: #e6c8a0;
-  }
-
-  .status-dot {
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    margin-right: 8px;
-    border-radius: 50%;
-    background: #c7a270;
+    color: #716357;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.4px;
   }
 
   .stage-controls {
     position: absolute;
-    top: 70px;
-    left: 25px;
-    right: 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 15px;
+    top: 72px;
+    left: 28px;
+    right: 28px;
     z-index: 6;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
   }
 
   .view-buttons {
     display: flex;
     flex-wrap: wrap;
-    gap: 7px;
+    gap: 6px;
     max-width: 75%;
   }
 
   .view-buttons button,
   .rotate-button {
-    padding: 10px 12px;
-    border: 1px solid #786454;
-    background: #241b17df;
-    color: #f4e9db;
-    font-size: 10px;
-    letter-spacing: .4px;
-    backdrop-filter: blur(12px);
-    transition: .2s;
+    padding: 10px 13px;
+    border: 1px solid #d5c9bd;
+    background: #f8f5f0ed;
+    color: #625449;
+    font-size: 11px;
+    font-weight: 400;
+    border-radius: 2px;
   }
 
   .view-buttons button:hover,
   .rotate-button:hover,
   .rotate-button.active {
-    background: #b78d5b;
-    border-color: #b78d5b;
-    color: #1e1713;
+    border-color: #a88d76;
+    background: #e5d9cd;
+    color: #3a2c23;
   }
 
   .rotate-button {
@@ -473,7 +514,7 @@
   }
 
   .rotate-button span {
-    margin-right: 6px;
+    margin-right: 5px;
     font-size: 15px;
   }
 
@@ -481,37 +522,40 @@
     position: absolute;
     inset: 0;
     z-index: 10;
-    background: #211914;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
     padding: 25px;
+    background: #eae4dc;
+    color: #493b31;
+    text-align: center;
   }
 
   .loader {
-    width: 45px;
-    height: 45px;
-    border: 2px solid #564335;
-    border-top-color: #c7a270;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #c9bcb0;
+    border-top-color: #826b56;
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
 
   @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   .loading h3 {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 24px;
+    margin: 24px 0 8px;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 30px;
     font-weight: 400;
-    margin: 25px 0 8px;
   }
 
   .loading p {
-    color: #b6a393;
+    color: #817367;
     font-size: 12px;
   }
 
@@ -519,239 +563,268 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
-    background: #f4eee5;
-    color: #2d211a;
-    border-left: 1px solid #d6c8b8;
+    background: #f8f5f0;
+    color: #352c26;
+    border-left: 1px solid #ded5ca;
   }
 
   .panel-header {
-    padding: 32px 26px 24px;
+    padding: 34px 28px 26px;
   }
 
-  .eyebrow,
-  .group-title > span {
-    color: #a17b51;
+  .eyebrow {
+    margin: 0;
+    color: #9b806a;
     font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
   }
 
   .panel-header h2 {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 30px;
-    line-height: 1.25;
+    margin: 15px 0 12px;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 39px;
+    line-height: 1.05;
     font-weight: 400;
-    margin: 13px 0;
+    letter-spacing: -0.5px;
   }
 
   .panel-header em {
-    color: #ae8455;
+    color: #96755f;
+    font-weight: 400;
   }
 
-  .panel-header p {
-    color: #8c7b6b;
-    font-size: 12px;
+  .panel-header > p:last-child {
     margin: 0;
+    color: #81766c;
+    font-size: 12px;
+    line-height: 1.8;
   }
 
   .tabs {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    border-top: 1px solid #ded3c5;
-    border-bottom: 1px solid #ded3c5;
+    border-top: 1px solid #e4dbd1;
+    border-bottom: 1px solid #e4dbd1;
   }
 
   .tabs button {
+    padding: 17px 4px;
+    border: 0;
+    border-bottom: 1px solid transparent;
     background: transparent;
-    border: none;
-    border-bottom: 2px solid transparent;
-    padding: 16px 4px;
-    color: #9b8a7b;
-    font-size: 11px;
-    font-weight: 600;
+    color: #92867b;
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .tabs button:hover {
+    color: #4d3d31;
   }
 
   .tabs button.selected {
-    color: #6b4827;
-    border-bottom-color: #a77a48;
+    border-bottom-color: #96755f;
+    color: #4d3d31;
   }
 
   .panel-body {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-    padding: 12px 26px 25px;
+    padding: 10px 28px 25px;
   }
 
   .option-group {
-    padding: 22px 0;
-    border-bottom: 1px solid #ded3c5;
+    padding: 25px 0;
+    border-bottom: 1px solid #e5dcd2;
   }
 
   .group-title {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 18px;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 19px;
+  }
+
+  .group-title > span {
+    color: #6d5a4c;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
   }
 
   .group-title small {
-    color: #9c8c7d;
+    color: #a0958b;
     font-size: 10px;
+    font-weight: 400;
     text-align: right;
   }
 
   .swatch-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 9px;
+    gap: 8px;
   }
 
   .swatch-option {
     display: flex;
     align-items: center;
-    gap: 9px;
-    padding: 10px;
-    border: 1px solid #ded3c5;
-    background: #faf7f2;
-    color: #4b3a2d;
+    gap: 10px;
+    min-height: 49px;
+    padding: 9px 11px;
+    border: 1px solid #e0d8cf;
+    border-radius: 2px;
+    background: #fffdfa;
+    color: #57483d;
     font-size: 11px;
+    font-weight: 400;
     text-align: left;
   }
 
+  .swatch-option:hover {
+    border-color: #b8a18d;
+  }
+
   .swatch-option.chosen {
-    border-color: #a77a48;
-    background: #eee2d1;
+    border-color: #a78b73;
+    background: #f0e9e1;
   }
 
   .swatch {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     flex-shrink: 0;
+    border: 1px solid #c6b8a9;
     border-radius: 50%;
-    border: 1px solid #b9aa99;
   }
 
-  .swatch-option b {
+  .check {
     margin-left: auto;
-    color: #936637;
+    color: #85664d;
+    font-size: 12px;
   }
 
   .hint {
+    margin: 0 0 30px;
+    color: #83776c;
     font-size: 12px;
-    line-height: 1.8;
-    color: #8c7b6b;
-    margin-bottom: 30px;
+    line-height: 1.9;
   }
 
   .range-group {
-    margin-bottom: 28px;
+    margin-bottom: 30px;
   }
 
   .range-group label {
     display: flex;
     justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 16px;
+    color: #5f5045;
     font-size: 12px;
-    margin-bottom: 15px;
   }
 
-  .range-group strong {
-    color: #9e7548;
+  .range-group label span:last-child {
+    color: #947760;
   }
 
   input[type="range"] {
     width: 100%;
-    accent-color: #a77a48;
+    accent-color: #9d8069;
     cursor: pointer;
   }
 
   .option-list {
     display: grid;
-    gap: 9px;
+    gap: 8px;
   }
 
   .option-list button {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     gap: 10px;
-    background: #faf7f2;
-    color: #4b3a2d;
-    border: 1px solid #ded3c5;
     padding: 15px;
-    text-align: left;
+    border: 1px solid #e0d8cf;
+    border-radius: 2px;
+    background: #fffdfa;
+    color: #57483d;
     font-size: 12px;
+    text-align: left;
   }
 
+  .option-list button:hover,
   .option-list button.chosen {
-    background: #eee2d1;
-    border-color: #a77a48;
+    border-color: #a78b73;
+    background: #f0e9e1;
   }
 
   .panel-footer {
-    padding: 20px 26px 24px;
-    border-top: 1px solid #ded3c5;
-    background: #eee6db;
+    padding: 22px 28px 25px;
+    border-top: 1px solid #e4dbd1;
+    background: #f1ebe4;
   }
 
   .price {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 12px;
+    margin-bottom: 22px;
   }
 
   .price > div {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 7px;
   }
 
   .price small {
-    color: #8f6c47;
-    font-size: 9px;
-    letter-spacing: 1px;
+    color: #665549;
+    font-size: 11px;
+    font-weight: 400;
   }
 
   .price span {
-    color: #958474;
+    color: #978b80;
     font-size: 10px;
   }
 
   .price strong {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 27px;
+    color: #49372c;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px;
     font-weight: 400;
     white-space: nowrap;
   }
 
   .actions {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
   }
 
   .actions button {
-    padding: 13px 5px;
-    background: #30231b;
-    color: #fff4e7;
-    border: 1px solid #30231b;
+    min-height: 43px;
+    padding: 10px 6px;
+    border: 1px solid #cdbfb1;
+    border-radius: 2px;
+    background: transparent;
+    color: #59483b;
     font-size: 11px;
+    font-weight: 400;
   }
 
   .actions button:hover {
-    background: #a77a48;
-    border-color: #a77a48;
+    border-color: #a78b73;
+    background: #e7dcd0;
   }
 
   .actions button:disabled {
-    opacity: .5;
+    opacity: 0.5;
     cursor: not-allowed;
-  }
-
-  .actions span {
-    margin-right: 4px;
   }
 
   @media (max-width: 950px) {
@@ -766,6 +839,7 @@
 
     .panel {
       border-left: 0;
+      border-top: 1px solid #ded5ca;
     }
 
     .panel-body {
@@ -775,13 +849,13 @@
 
   @media (max-width: 600px) {
     .stage {
-      height: 480px;
+      height: 490px;
     }
 
     .stage-top,
     .stage-bottom {
-      left: 15px;
-      right: 15px;
+      left: 16px;
+      right: 16px;
     }
 
     .stage-number {
@@ -789,9 +863,9 @@
     }
 
     .stage-controls {
-      top: 62px;
-      left: 15px;
-      right: 15px;
+      top: 65px;
+      left: 16px;
+      right: 16px;
       flex-direction: column;
     }
 
@@ -801,8 +875,8 @@
 
     .view-buttons button,
     .rotate-button {
-      padding: 8px;
-      font-size: 9px;
+      padding: 8px 9px;
+      font-size: 10px;
     }
 
     .stage-bottom {
@@ -814,6 +888,10 @@
     .panel-footer {
       padding-left: 20px;
       padding-right: 20px;
+    }
+
+    .panel-header h2 {
+      font-size: 36px;
     }
   }
 </style>
