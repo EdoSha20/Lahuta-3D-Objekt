@@ -1,82 +1,174 @@
 <script>
   import { Canvas } from '@threlte/core'
   import Scene from './Scene.svelte'
+  import { HOLZ, FELL, METALL, LICHT, PRESETS, VIEWS, STANDARD, preis, zusammenfassung } from './optionen.js'
+
+  function laden() {
+    try {
+      return { ...STANDARD, ...JSON.parse(localStorage.getItem('lahuta-config')) }
+    } catch {
+      return { ...STANDARD }
+    }
+  }
 
   let geladen = $state(false)
-  let config = $state({ holz: 'walnuss', fell: 'ziege', metall: 'messing', breit: 0, tief: 0, lang: 0 })
+  let config = $state(laden())
+  let view = $state(null)
+  let drehen = $state(false)
+  let kopiert = $state(false)
+  let api = null
 
-  const holzListe = [['walnuss', 'Walnuss'], ['ahorn', 'Ahorn'], ['kirsche', 'Kirsche'], ['ebenholz', 'Ebenholz']]
-  const fellListe = [['ziege', 'Ziege'], ['schaf', 'Schaf'], ['kalb', 'Kalb']]
-  const metallListe = [['messing', 'Messing'], ['silber', 'Silber'], ['kupfer', 'Kupfer']]
+  // Konfiguration im Browser merken
+  $effect(() => {
+    const s = JSON.stringify(config)
+    try {
+      localStorage.setItem('lahuta-config', s)
+    } catch {}
+  })
+
+  const gesamtpreis = $derived(preis(config))
+
+  function preset(p) {
+    Object.assign(config, p.werte)
+  }
+  function zuruecksetzen() {
+    Object.assign(config, STANDARD)
+  }
+  function ansicht(v) {
+    view = { pos: v.pos, target: v.target, id: Math.random() }
+  }
+  function foto() {
+    try {
+      const a = document.createElement('a')
+      a.href = api.screenshot()
+      a.download = 'meine-lahuta.png'
+      a.click()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  async function kopieren() {
+    try {
+      await navigator.clipboard.writeText(zusammenfassung(config))
+      kopiert = true
+      setTimeout(() => (kopiert = false), 2000)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const knopf = (aktiv) =>
+    'inline-flex cursor-pointer items-center gap-2 border px-3 py-2 font-ui text-xs font-bold tracking-wider uppercase transition ' +
+    (aktiv ? 'border-gold bg-gold text-schwarz' : 'border-linie bg-kohle text-creme hover:border-gold')
+
+  const label = 'mt-6 mb-2 font-ui text-[11px] font-bold tracking-[0.25em] text-rot uppercase'
 </script>
 
-<div class="rahmen">
-  <Canvas>
-    <Scene {config} onloaded={() => (geladen = true)} />
-  </Canvas>
+<div class="lg:grid lg:h-[calc(100vh-82px)] lg:grid-cols-[1fr_380px]">
+  <!-- 3D-Bühne -->
+  <div class="relative h-[65vh] min-h-0 lg:h-auto">
+    <Canvas>
+      <Scene
+        {config}
+        {view}
+        autoRotate={drehen}
+        hintergrund="#161213"
+        onloaded={() => (geladen = true)}
+        onready={(a) => (api = a)}
+      />
+    </Canvas>
 
-  {#if geladen}
-    <aside class="menue">
-      <h2>Konfiguration</h2>
+    {#if !geladen}
+      <div class="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-kohle">
+        <div class="h-12 w-12 animate-spin rounded-full border-4 border-linie border-t-gold"></div>
+        <p class="font-ui text-xs tracking-[0.25em] text-gold uppercase">Lahuta wird geladen …</p>
+      </div>
+    {:else}
+      <div class="absolute top-4 left-4 flex max-w-[85%] flex-wrap gap-2">
+        {#each VIEWS as v}
+          <button class={knopf(false) + ' bg-schwarz/80 backdrop-blur'} onclick={() => ansicht(v)}>{v.name}</button>
+        {/each}
+        <button class={knopf(drehen)} onclick={() => (drehen = !drehen)}>⟳ Drehen</button>
+      </div>
+      <p class="absolute bottom-3 left-4 font-ui text-[11px] text-grau">
+        Ziehen = drehen · Scrollen = zoomen · Zwei Finger = verschieben
+      </p>
+    {/if}
+  </div>
 
-      <h3>Holz</h3>
-      <div class="knoepfe">
-        {#each holzListe as [key, name]}
-          <button class:aktiv={config.holz === key} onclick={() => (config.holz = key)}>{name}</button>
+  <!-- Bedienfeld -->
+  <aside class="overflow-y-auto border-t-4 border-rot bg-karte p-6 lg:border-t-0 lg:border-l-4">
+    {#if geladen}
+      <h2 class="text-2xl">Deine Lahuta</h2>
+      <p class="font-ui text-xs text-grau">Gestalte dein eigenes Instrument</p>
+
+      <p class={label}>Fertige Looks</p>
+      <div class="flex flex-wrap gap-2">
+        {#each PRESETS as p}
+          <button class={knopf(false)} onclick={() => preset(p)}>{p.name}</button>
         {/each}
       </div>
 
-      <h3>Fell</h3>
-      <div class="knoepfe">
-        {#each fellListe as [key, name]}
-          <button class:aktiv={config.fell === key} onclick={() => (config.fell = key)}>{name}</button>
+      <p class={label}>Holz</p>
+      <div class="flex flex-wrap gap-2">
+        {#each HOLZ as h (h.id)}
+          <button class={knopf(config.holz === h.id)} onclick={() => (config.holz = h.id)}>
+            <span class="h-3 w-3 rounded-full border border-white/40" style="background:{h.farbe}"></span>{h.name}
+          </button>
         {/each}
       </div>
 
-      <h3>Metall</h3>
-      <div class="knoepfe">
-        {#each metallListe as [key, name]}
-          <button class:aktiv={config.metall === key} onclick={() => (config.metall = key)}>{name}</button>
+      <p class={label}>Fell</p>
+      <div class="flex flex-wrap gap-2">
+        {#each FELL as f (f.id)}
+          <button class={knopf(config.fell === f.id)} onclick={() => (config.fell = f.id)}>
+            <span class="h-3 w-3 rounded-full border border-white/40" style="background:{f.farbe}"></span>{f.name}
+          </button>
         {/each}
       </div>
 
-      <h3>Form</h3>
-      <label>Korpus breiter <input type="range" min="0" max="1" step="0.01" bind:value={config.breit} /></label>
-      <label>Korpus tiefer <input type="range" min="0" max="1" step="0.01" bind:value={config.tief} /></label>
-      <label>Hals länger <input type="range" min="0" max="1" step="0.01" bind:value={config.lang} /></label>
-    </aside>
-  {:else}
-    <div class="laden">
-      <div class="kreis"></div>
-      <p>Lahuta wird geladen …</p>
-    </div>
-  {/if}
+      <p class={label}>Metall</p>
+      <div class="flex flex-wrap gap-2">
+        {#each METALL as m (m.id)}
+          <button class={knopf(config.metall === m.id)} onclick={() => (config.metall = m.id)}>
+            <span class="h-3 w-3 rounded-full border border-white/40" style="background:{m.farbe}"></span>{m.name}
+          </button>
+        {/each}
+      </div>
+
+      <p class={label}>Form</p>
+      <div class="space-y-3 font-ui text-xs">
+        <label class="block">
+          <span class="flex justify-between"><span>Korpus breiter</span><b class="text-gold">{Math.round(config.breit * 100)} %</b></span>
+          <input class="w-full accent-rot" type="range" min="0" max="1" step="0.01" bind:value={config.breit} />
+        </label>
+        <label class="block">
+          <span class="flex justify-between"><span>Korpus tiefer</span><b class="text-gold">{Math.round(config.tief * 100)} %</b></span>
+          <input class="w-full accent-rot" type="range" min="0" max="1" step="0.01" bind:value={config.tief} />
+        </label>
+        <label class="block">
+          <span class="flex justify-between"><span>Hals länger</span><b class="text-gold">{Math.round(config.lang * 100)} %</b></span>
+          <input class="w-full accent-rot" type="range" min="0" max="1" step="0.01" bind:value={config.lang} />
+        </label>
+      </div>
+
+      <p class={label}>Licht</p>
+      <div class="flex flex-wrap gap-2">
+        {#each LICHT as l (l.id)}
+          <button class={knopf(config.licht === l.id)} onclick={() => (config.licht = l.id)}>{l.name}</button>
+        {/each}
+      </div>
+
+      <div class="mt-8 flex items-center justify-between border border-linie bg-kohle px-4 py-3">
+        <span class="font-ui text-xs tracking-wider text-grau uppercase">Preis (fiktiv)</span>
+        <strong class="font-titel text-2xl text-gold">ca. {gesamtpreis} €</strong>
+      </div>
+
+      <div class="mt-4 grid grid-cols-3 gap-2">
+        <button class={knopf(false) + ' justify-center'} onclick={foto}>📷 Foto</button>
+        <button class={knopf(false) + ' justify-center'} onclick={kopieren}>{kopiert ? '✓ Kopiert' : '📋 Text'}</button>
+        <button class={knopf(false) + ' justify-center'} onclick={zuruecksetzen}>↺ Reset</button>
+      </div>
+    {/if}
+  </aside>
 </div>
-
-<style>
-  .rahmen { position: relative; width: 100%; height: 100%; }
-  .menue {
-    position: absolute; top: 1rem; right: 1rem; width: 240px;
-    background: rgba(20, 20, 24, 0.85); color: white;
-    padding: 1rem; border-radius: 12px; backdrop-filter: blur(6px);
-  }
-  h2 { margin: 0 0 0.5rem; font-size: 1.1rem; }
-  h3 { margin: 0.8rem 0 0.3rem; font-size: 0.85rem; color: #e0a84a; }
-  .knoepfe { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-  button {
-    padding: 0.35rem 0.7rem; border: 1px solid #666; border-radius: 6px;
-    background: #2a2a30; color: white; cursor: pointer;
-  }
-  button.aktiv { background: #e0a84a; color: #1b1b1f; border-color: #e0a84a; }
-  label { display: flex; flex-direction: column; font-size: 0.85rem; margin-top: 0.5rem; }
-  .laden {
-    position: absolute; inset: 0; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 1rem;
-    background: #1b1b1f; color: white;
-  }
-  .kreis {
-    width: 48px; height: 48px; border: 5px solid #555; border-top-color: #e0a84a;
-    border-radius: 50%; animation: drehen 1s linear infinite;
-  }
-  @keyframes drehen { to { transform: rotate(360deg); } }
-</style>
