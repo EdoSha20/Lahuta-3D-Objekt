@@ -43,11 +43,11 @@ export const PRESETS = [
 
 // Kamera-Ansichten (three.js: Y = oben, Vorderseite = +Z)
 export const VIEWS = [
-  { name: 'Gesamt', pos: [0.4, 0.7, 2.6], target: [0.1, 0.5, 0] },
-  { name: 'Korpus', pos: [0.35, 0.3, 0.9], target: [0, 0.15, 0] },
-  { name: 'Kopf', pos: [0.4, 1.0, 0.7], target: [0, 0.9, 0] },
-  { name: 'Bogen', pos: [0.9, 0.4, 1.2], target: [0.34, 0.35, 0] },
-  { name: 'Seite', pos: [2.2, 0.6, 0.2], target: [0, 0.5, 0] }
+  { name: 'Gesamt', pos: [0.35, 0.65, 2.4], target: [0.17, 0.5, 0] },
+  { name: 'Korpus', pos: [0.3, 0.3, 0.95], target: [0.02, 0.15, 0] },
+  { name: 'Kopf', pos: [0.45, 1.0, 0.75], target: [0, 0.92, 0] },
+  { name: 'Bogen', pos: [0.95, 0.45, 1.25], target: [0.31, 0.35, 0] },
+  { name: 'Seite', pos: [2.3, 0.6, 0.4], target: [0.1, 0.5, 0] }
 ]
 
 const finde = (liste, id) => liste.find((x) => x.id === id)
