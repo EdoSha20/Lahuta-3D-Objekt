@@ -15,7 +15,7 @@
   /**
    * @typedef {import('./optionen.js').LahutaConfig} LahutaConfig
    * @typedef {import('three').PerspectiveCamera} PerspectiveCamera
-   * @typedef {import('three-stdlib').OrbitControls} OrbitControlsType
+   * @typedef {import('three/examples/jsm/controls/OrbitControls.js').OrbitControls} OrbitControlsType
    */
 
   /** @type {{
@@ -34,7 +34,7 @@
     autoRotate = false,
     interactive = true,
     buehne = true,
-    hintergrund = '#201915',
+    hintergrund = '#eae4dc',
     onloaded,
     onready
   } = $props()
@@ -42,7 +42,7 @@
   const gltf = useGltf('/models/lahuta.glb')
   const { renderer, scene, camera } = useThrelte()
 
-  const WAND = '#9a7656'
+  const WAND = '#eae4dc'
 
   /** @type {PerspectiveCamera | undefined} */
   let cam = $state()
@@ -191,7 +191,7 @@
     )
   })
 
-  // MORPH TARGETS – SICHTBARE FORMVERÄNDERUNG
+  // MORPH TARGETS
 
   $effect(() => {
     if (!$gltf) return
@@ -269,9 +269,12 @@
     <T.MeshStandardMaterial color={WAND} roughness={1} />
   </T.Mesh>
 
-  <!-- Originaler Kilim-Teppich -->
+  <!-- Kilim-Teppich -->
   {#if teppich}
-    <T.Mesh rotation.x={-Math.PI / 2} position={[0.15, -0.037, 0.05]}>
+    <T.Mesh
+      rotation.x={-Math.PI / 2}
+      position={[0.15, -0.037, 0.05]}
+    >
       <T.PlaneGeometry args={[1.7, 1.15]} />
       <T.MeshStandardMaterial map={teppich} roughness={0.95} />
     </T.Mesh>
